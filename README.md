@@ -1,0 +1,1 @@
+(Work in progress) Creating a markdown formatted MSDS (Material Safety Data Sheet) of the most common chemicals in general use.
