@@ -1,0 +1,174 @@
+{#- Shared template for every SDS note. Edit here, then run `sds import --all`. -#}
+{% macro blocks(n) %}
+{% for block in doc.sections.get(n, []) %}
+### {{ block.heading }}
+
+{% for it in block.items %}
+- {{ item(it, n) }}
+{% endfor %}
+
+{% endfor %}
+{% endmacro %}
+{% macro gap_if_empty(n) %}
+{% if not doc.sections.get(n) %}
+{{ gap_callout }}
+
+{% endif %}
+{% endmacro %}
+{% macro heading(n) %}
+## {{ n }}. {{ titles[n] }}
+{% if n in non_mandatory %}
+
+*Non-mandatory for OSHA enforcement (29 CFR 1910.1200).*
+{% endif %}
+
+{% endmacro %}
+# {{ doc.name }}
+
+> [!{{ callout }}] {{ headline }}
+{% if doc.ghs.pictograms %}
+> {% for code, label in doc.ghs.pictograms %}![[{{ code }}.svg|64]] {% endfor %}
+
+>
+{% endif %}
+{% for code, statement in h_statements %}
+> - **{{ code }}**: {{ statement }}
+{% endfor %}
+{% if not h_statements %}
+> No GHS hazard statements were found in the sources consulted. This does not mean the substance is safe; check the supplier's SDS.
+{% endif %}
+>
+> **CAS** {{ doc.cas or "n/a" }} · **UN** {{ doc.un_number or "n/a" }}{% if doc.nfpa %} · **NFPA 704** H{{ doc.nfpa.get("health", "?") }} F{{ doc.nfpa.get("fire", "?") }} I{{ doc.nfpa.get("instability", "?") }}{% endif %}
+
+
+> [!note]- About this document
+> This note was compiled automatically from public databases and supplier safety data sheets (see **Sources**). It is a reference, not a replacement for the SDS supplied with your product. Concentrations, grades and suppliers differ, so check the label and the supplier's SDS before use.
+
+{{ heading(1) }}
+| Field | Value |
+| --- | --- |
+| **Product name** | {{ doc.name }} |
+{% if doc.synonyms %}
+| **Synonyms** | {{ text(doc.synonyms | join(", "), 1, true) }} |
+{% endif %}
+| **CAS number** | {{ doc.cas or "n/a" }} |
+| **EC number** | {{ doc.ec or "n/a" }} |
+{% if doc.cid %}
+| **PubChem CID** | [{{ doc.cid }}](https://pubchem.ncbi.nlm.nih.gov/compound/{{ doc.cid }}) |
+{% endif %}
+| **Molecular formula** | {{ doc.formula or "n/a" }} |
+| **Molecular weight** | {{ doc.molecular_weight or "n/a" }} |
+{% if doc.iupac_name %}
+| **IUPAC name** | {{ text(doc.iupac_name, 1, true) }} |
+{% endif %}
+| **UN number** | {{ doc.un_number or "n/a" }} |
+
+{% if doc.description %}
+### Description
+
+{% for it in doc.description %}
+- {{ item(it, 1) }}
+{% endfor %}
+
+{% endif %}
+### Recommended use and restrictions
+
+{% for it in doc.uses %}
+- {{ item(it, 1) }}
+{% else %}
+- Laboratory chemical. No specific restrictions were found in the sources consulted.
+{% endfor %}
+
+### Supplier
+
+{% if doc.supplier_sds %}
+{% for key in doc.supplier_sds %}
+- {{ doc.sources[key].title }}{{ cite(key) }}
+{% endfor %}
+{% else %}
+- Not applicable. This is an aggregated reference document. Use the SDS from your actual supplier for supplier details.
+{% endif %}
+
+### Emergency telephone
+
+{% for c in contacts %}
+- **{{ c.name }}:** {{ c.phone }}{% if c.get("note") %} ({{ c.note }}){% endif %}{{ cite(c.get("source")) }}
+{% endfor %}
+
+{{ blocks(1) }}
+{{ heading(2) }}
+### GHS label elements
+
+| Element | Value |
+| --- | --- |
+| **Signal word** | {{ doc.ghs.signal_word or "None" }}{{ cite(doc.ghs.source) }} |
+| **Pictograms** | {% for code, label in doc.ghs.pictograms %}![[{{ code }}.svg|32]] {{ label }}{% if not loop.last %}, {% endif %}{% else %}None{% endfor %} |
+
+{% if h_statements %}
+### Hazard statements
+
+{% for code, statement in h_statements %}
+- **{{ code }}**: {{ statement }}{{ cite(doc.ghs.source) }}
+{% endfor %}
+
+{% endif %}
+{% if p_statements %}
+### Precautionary statements
+
+Codes{{ cite(doc.ghs.source) }}; statement texts{{ cite("pubchem-ghs-codes") }}.
+
+{% for code, statement in p_statements %}
+- **{{ code }}**: {{ statement }}
+{% endfor %}
+
+{% endif %}
+{{ blocks(2) }}
+{{ heading(3) }}
+| Component | CAS | EC | Concentration (%) |
+| --- | --- | --- | --- |
+{% for c in doc.composition %}
+| {{ text(c.name, 3, true) }} | {{ c.cas or "n/a" }} | {{ c.ec or "n/a" }} | {{ c.percent or "n/a" }} |
+{% endfor %}
+
+{{ blocks(3) }}
+{% for n in [4, 5, 6, 7, 8] %}
+{{ heading(n) }}
+{{ gap_if_empty(n) }}
+{{ blocks(n) }}
+{% endfor %}
+{{ heading(9) }}
+| Property | Value |
+| --- | --- |
+{% for row in required_properties + extra_properties %}
+{% set values = doc.properties.get(row, []) %}
+| **{{ row }}** | {% if values %}{% for it in values %}{{ item(it, 9, true) }}{% if not loop.last %}; {% endif %}{% endfor %}{% else %}No data available{% endif %} |
+{% endfor %}
+
+{{ blocks(9) }}
+{% for n in [10, 11, 12, 13, 14, 15] %}
+{{ heading(n) }}
+{{ gap_if_empty(n) }}
+{{ blocks(n) }}
+{% endfor %}
+{{ heading(16) }}
+- **Date of preparation:** {{ today }}
+- **Prepared by:** `sds` generator v{{ version }} (this vault), from the sources listed below
+{% if doc.wikipedia %}
+- **Background:** [Wikipedia article]({{ doc.sources[doc.wikipedia].url }}){{ cite(doc.wikipedia) }}
+{% endif %}
+- **Revision:** Regenerate with `sds import "{{ doc.name }}"` to pick up source updates
+{% for note in doc.notes %}
+- {{ text(note, 16, raw=true) }}
+{% endfor %}
+
+{{ blocks(16) }}
+{% if doc.related %}
+## Related
+
+{% for name in doc.related %}
+- [[{{ name }}]]
+{% endfor %}
+
+{% endif %}
+## Sources
+

@@ -1,0 +1,20 @@
+filters:
+  and:
+  - file.hasTag("sds")
+  - file.inFolder("SDS")
+views:
+- type: table
+  name: All SDS
+  order:
+  - file.name
+  - category
+  - cas
+  - un_number
+  - signal_word
+  - hazard_codes
+  - nfpa_health
+  - nfpa_fire
+  - nfpa_instability
+  groupBy:
+    property: category
+    direction: ASC

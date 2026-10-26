@@ -1,0 +1,201 @@
+# Manifest of chemicals in the vault. `sds import --all` regenerates every note.
+#
+# Per-chemical keys:
+#   name, category        note title and folder under SDS/
+#   pubchem_cid           primary data source (https://pubchem.ncbi.nlm.nih.gov)
+#   cas, un_number        identity (shown in header and frontmatter)
+#   aliases               extra names that should wikilink to this note
+#   composition           mixture table for Section 3 (omit for pure substances)
+#   supplier_sds          supplier SDS PDFs ({supplier, url} or {supplier, path})
+#   exclude_sources       regexes for PubChem contributors to skip ("SourceName | Name")
+#   exclude_property_sources  same, but only for the Section 9 property table
+#   ghs_source            regex choosing which PubChem GHS classification to use
+#   overrides             curated facts; every item must cite a key from `sources`
+#   related, notes, tags  free-form extras
+#   wikipedia             article URL (cited in Section 16)
+#
+# Generated manifests in manifests/*.yaml are loaded after this file; entries here win
+# on name or PubChem CID collisions.
+#
+# Keep `chemicals:` as the LAST top-level key (`sds add` appends to it).
+
+# `sds wiki-sync` crawls each category tree, resolves pages to PubChem via Wikidata and
+# writes `output`. Pages without a single compound (media, named mixtures) are skipped.
+wikipedia_sync:
+  - category: "Category:Reagents"
+    output: manifests/wikipedia-reagents.yaml
+    folder: Reagents
+    exclude_categories:
+      # Pharmaceuticals rather than bench reagents
+      - "Category:Alkylating antineoplastic agents"
+      - "Category:Cyclic acetals"
+      # Chemical warfare agents
+      - "Category:Sulfur mustards"
+      - "Category:Nitrogen mustard vesicants"
+      - "Category:Mustard compounds"
+      # Mixtures with no single PubChem compound
+      - "Category:Cell culture media"
+      - "Category:Microbiological media"
+    folders:
+      "Category:Reagents": ""
+      "Category:Reagents for organic chemistry": Organic
+      "Category:Acetylating agents": Organic/Acetylating agents
+      "Category:Alkylating agents": Organic/Alkylating agents
+      "Category:Dehydrating agents": Organic/Dehydrating agents
+      "Category:Fluorinating agents": Organic/Fluorinating agents
+      "Category:Non-nucleophilic bases": Organic/Non-nucleophilic bases
+      "Category:Organolithium compounds": Organic/Organolithium compounds
+      "Category:Organomagnesium compounds": Organic/Organomagnesium compounds
+      "Category:Protecting groups": Organic/Protecting groups
+      "Category:Radical initiators": Organic/Radical initiators
+      "Category:Analytical reagents": Analytical
+      "Category:Reagents for biochemistry": Biochemistry
+      "Category:Peptide coupling reagents": Biochemistry/Peptide coupling reagents
+      "Category:Cell culture reagents": Biochemistry/Cell culture
+      "Category:Drug testing reagents": Drug testing
+
+emergency_contacts:
+  - name: CHEMTREC (US & Canada, 24 h)
+    phone: "1-800-424-9300"
+    note: international +1-703-527-3887
+    source: chemtrec
+  - name: US Poison Control
+    phone: "1-800-222-1222"
+    source: poison-control
+
+sources:
+  chemtrec:
+    title: CHEMTREC emergency call center
+    url: https://www.chemtrec.com/
+  poison-control:
+    title: Poison Control (America's Poison Centers)
+    url: https://www.poison.org/
+  wiki-nitric-acid:
+    title: "Wikipedia: Nitric acid"
+    url: https://en.wikipedia.org/wiki/Nitric_acid
+  wiki-rfna:
+    title: "Wikipedia: Red fuming nitric acid"
+    url: https://en.wikipedia.org/wiki/Red_fuming_nitric_acid
+  wiki-hcl:
+    title: "Wikipedia: Hydrochloric acid"
+    url: https://en.wikipedia.org/wiki/Hydrochloric_acid
+  cameo-rfna:
+    title: "CAMEO Chemicals: Nitric acid, red fuming"
+    url: https://cameochemicals.noaa.gov/chemical/4044
+  cameo-hcl:
+    title: "CAMEO Chemicals: Hydrochloric acid, solution"
+    url: https://cameochemicals.noaa.gov/chemical/3598
+
+chemicals:
+  - name: Sulfuric acid
+    category: Acids
+    pubchem_cid: 1118
+    cas: 7664-93-9
+    un_number: UN1830
+    aliases: [sulphuric acid, oil of vitriol, H2SO4]
+    tags: [acid, corrosive, oxidizer, dehydrating-agent]
+    exclude_sources: ["SPENT", "fuming", "sulfur trioxide", "not more than 51"]
+    related: ["Nitric acid (azeotropic, 68%)", Red fuming nitric acid, Water]
+    notes:
+      - Always add acid to water, never water to acid. Dilution is strongly exothermic.
+
+  - name: Nitric acid (azeotropic, 68%)
+    category: Acids
+    pubchem_cid: 944
+    cas: 7697-37-2
+    un_number: UN2031
+    aliases: [nitric acid, azeotropic nitric acid, concentrated nitric acid, HNO3]
+    tags: [acid, corrosive, oxidizer]
+    exclude_sources: ["RED FUMING", "94\\.5%"]
+    ghs_source: "C ≤ 70"
+    composition:
+      - {name: Nitric acid, cas: 7697-37-2, ec: 231-714-2, percent: "≈68"}
+      - {name: Water, cas: 7732-18-5, ec: 231-791-2, percent: "≈32"}
+    overrides:
+      properties:
+        Boiling point: {text: "120.5 °C at 1 atm (maximum-boiling azeotrope, ~68% HNO3)", source: wiki-nitric-acid}
+        Relative density: {text: "≈1.41 g/cm³ (68% solution)", source: wiki-nitric-acid}
+    related: [Red fuming nitric acid, Sulfuric acid, Water]
+    notes:
+      - Commercial "concentrated" nitric acid is the ~68% azeotrope with water. Distillation cannot concentrate it further without a dehydrating agent such as [[Sulfuric acid]].
+      - PubChem data for CID 944 covers nitric acid generally. Values for anhydrous or >70% acid may appear in some sections.
+
+  - name: Red fuming nitric acid
+    category: Acids
+    pubchem_cid: 944
+    cas: 8007-58-7
+    un_number: UN2032
+    aliases: [RFNA, fuming nitric acid]
+    tags: [acid, corrosive, oxidizer, toxic-gas]
+    exclude_sources: ["OTHER THAN RED FUMING", "≤ 70", "< 70"]
+    # ICSC/HSDB property values describe ordinary nitric acid, not the red fuming grade.
+    exclude_property_sources: ["ICSC", "HSDB", "Hazardous Substances Data Bank"]
+    ghs_source: "C > 70"
+    composition:
+      - {name: Nitric acid, cas: 7697-37-2, ec: 231-714-2, percent: "≈84"}
+      - {name: Dinitrogen tetroxide, cas: 10544-72-6, ec: 234-126-4, percent: "≈13"}
+      - {name: Water, cas: 7732-18-5, ec: 231-791-2, percent: "1–2"}
+    overrides:
+      properties:
+        Appearance: {text: "Red-brown fuming liquid; colour from dissolved nitrogen dioxide / dinitrogen tetroxide", source: wiki-rfna}
+      sections:
+        "2":
+          - heading: Red fuming grade
+            items:
+              - {text: "Releases toxic, red-brown nitrogen dioxide fumes on exposure to air. Strong oxidizer; may ignite combustible materials on contact.", source: cameo-rfna}
+    related: ["Nitric acid (azeotropic, 68%)", Sulfuric acid]
+    notes:
+      - RFNA composition varies by specification. Inhibited RFNA (IRFNA) adds ~0.6% hydrogen fluoride as a corrosion inhibitor and carries additional HF hazards.
+      - PubChem data for CID 944 is shared with ordinary nitric acid. Sources specific to the red fuming grade (CAMEO, ERG, 49 CFR) are preferred where available.
+
+  - name: Hydrochloric acid (32-38%)
+    category: Acids
+    pubchem_cid: 313
+    cas: 7647-01-0
+    un_number: UN1789
+    aliases: [hydrochloric acid, muriatic acid, HCl]
+    tags: [acid, corrosive]
+    exclude_sources: ["ANHYDROUS", "REFRIGERATED", "Hydrogen chloride\\(anhydrous\\)"]
+    # PubChem's HCl record mixes in data for the anhydrous gas.
+    exclude_property_sources: ["hydrogen chloride"]
+    ghs_source: "Safe Work Australia \\| hydrochloric acid"
+    composition:
+      - {name: Hydrogen chloride, cas: 7647-01-0, ec: 231-595-7, percent: "32–38"}
+      - {name: Water, cas: 7732-18-5, ec: 231-791-2, percent: "62–68"}
+    overrides:
+      properties:
+        Appearance: {text: "Clear, colourless to light-yellow fuming liquid with a pungent odour", source: cameo-hcl}
+    related: [Sulfuric acid, Water]
+
+  - name: Sodium borohydride
+    category: Reducing Agents
+    pubchem_cid: 4311764
+    cas: 16940-66-2
+    un_number: UN1426
+    aliases: [NaBH4, sodium tetrahydroborate]
+    tags: [reducing-agent, water-reactive, flammable-solid, hydride]
+    related: [Sodium triacetoxyborohydride, Water]
+
+  - name: Sodium triacetoxyborohydride
+    category: Reducing Agents
+    pubchem_cid: 5049666
+    cas: 56553-60-7
+    un_number: UN1409
+    aliases: [STAB, NaBH(OAc)3, sodium triacetoxyhydroborate]
+    tags: [reducing-agent, water-reactive, flammable-solid, hydride]
+    supplier_sds:
+      - supplier: Loba Chemie
+        url: https://www.lobachemie.com/lab-chemical-msds/MSDS-SODIUM-TRIACETOXY-BOROHYDRIDE-CASNO-56553-60-6053K-EN.aspx
+    related: [Sodium borohydride, Water]
+    notes:
+      - Milder and more selective than [[Sodium borohydride]]. Commonly used for reductive amination. Still releases flammable hydrogen on contact with water or protic solvents.
+
+  - name: Water
+    category: General
+    pubchem_cid: 962
+    cas: 7732-18-5
+    aliases: [H2O, dihydrogen monoxide, distilled water, deionized water]
+    tags: [solvent, non-hazardous]
+    related: [Sulfuric acid, Sodium borohydride]
+    notes:
+      - Water is not classified as hazardous. It is included because it reacts violently with many vault chemicals (hydrides, concentrated acids).

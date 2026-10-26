@@ -1,0 +1,60 @@
+.set-to-root-empty-state {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-1);
+  padding: var(--size-4-4);
+}
+
+.set-to-root-empty-title {
+  font-size: var(--font-ui-medium);
+  font-weight: 600;
+}
+
+.set-to-root-empty-desc {
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.set-to-root-icon-setting .setting-item-control {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+}
+
+.set-to-root-icon-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+  color: var(--text-muted);
+}
+
+.set-to-root-setting-feedback {
+  margin-top: var(--size-2-1);
+  color: var(--text-muted);
+}
+
+.set-to-root-setting-feedback.mod-warning {
+  color: var(--text-warning);
+}
+
+.set-to-root-icon-suggestion {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+}
+
+.set-to-root-icon-suggestion-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  min-width: 20px;
+  color: var(--text-muted);
+}
+
+.set-to-root-icon-suggestion-label {
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-small);
+}

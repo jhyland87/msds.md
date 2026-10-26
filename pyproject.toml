@@ -1,0 +1,31 @@
+[project]
+name = "sds-vault"
+version = "0.1.0"
+description = "Generate consistent 16-section SDS Markdown notes for an Obsidian vault"
+requires-python = ">=3.11"
+dependencies = [
+  "requests>=2.31",
+  "pyyaml>=6.0",
+  "jinja2>=3.1",
+  "pdfplumber>=0.11",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+sds = "sds.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["tools"]
+
+[tool.setuptools.package-data]
+sds = ["templates/*.j2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tools", "tests"]

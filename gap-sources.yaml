@@ -1,0 +1,55 @@
+# Curated sources that fill gaps in notes from any manifest, keyed by note name.
+# Kept outside manifests/ so `sds wiki-sync` never overwrites them.
+#
+# supplier_sds: supplier SDS PDFs. Each is downloaded to cache/, parsed into the 16 sections and
+#   cited. Its Section 2 provides the GHS label when PubChem has none.
+# safety_cid: read PubChem safety data from another record, e.g. the salt that is actually sold.
+#
+# Entries below were found with the SDSentry SDS lookup. Check each sheet matches the product
+# grade (several are solutions, and their labels include the solvent's hazards).
+
+supplier_sds:
+  "1,5-Diazabicyclo(4.3.0)non-5-ene":
+    - supplier: Apollo Scientific
+      url: https://store.apolloscientific.co.uk/storage/msds/OR5394_msds.pdf
+  Methyllithium:
+    - supplier: Fisher Scientific / Acros Organics (1.6 M in diethyl ether)
+      url: https://www.fishersci.com/store/msds?partNumber=AC188751000&productDescription=METHYLLITHIUM&vendorId=VN00032119&countryCode=US&language=en
+  Dimethylzinc:
+    - supplier: Fisher Scientific / Acros Organics (1.2 M in toluene)
+      url: https://www.fishersci.com/store/msds?partNumber=AC377241000&productDescription=DIMETHYLZINC&vendorId=VN00032119&countryCode=US&language=en
+  Borane tert-butylamine:
+    - supplier: Fisher Scientific / Acros Organics (borane-tert-butylamine complex)
+      url: https://www.fishersci.com/store/msds?partNumber=AC177300250&productDescription=BORANE-TERT-BUTYLAMINE+C+25GR&vendorId=VN00032119&countryCode=US&language=en
+  Dansyl amide:
+    - supplier: Fisher Scientific / Acros Organics
+      url: https://www.fishersci.com/store/msds?partNumber=AC204090010&productDescription=DANSYLAMIDE+99%25+1GR&vendorId=VN00032119&countryCode=US&language=en
+  Reinecke's salt:
+    - supplier: Fisher Scientific / Acros Organics (ammonium reineckate)
+      url: https://www.fishersci.com/store/msds?partNumber=AC423331000&countryCode=US&language=en
+  Ninhydrin:
+    - supplier: AquaPhoenix Scientific (via Fisher Scientific)
+      url: https://www.fishersci.com/store/msds?partNumber=S25448&productDescription=NINHYDRIN+10G&vendorId=VN00115888&countryCode=US&language=en
+  Methylcobalamin:
+    - supplier: Cayman Chemical
+      url: https://cdn.caymanchem.com/cdn/msds/29113m.pdf
+
+safety_cid:
+  G418:
+    cid: 16218858
+    reason: G418 disulfate, the form sold as a selection antibiotic
+  Phenoxybenzamine:
+    cid: 5284441
+    reason: phenoxybenzamine hydrochloride, the form sold commercially
+
+# SDSentry lookups that hit its rate limit (retry later). These are sold commercially, so a
+# supplier SDS should exist:
+#   Camphorsultam, Vinyllithium, Propynyllithium, Biotin PEG2 amine, 3-Azidocoumarin,
+#   Tris(tert-butoxy)silanethiol, Diisopinocampheylborane, Ethylene bis(iodoacetate)
+# SDSentry had no supplier PDF (only PubChem's empty hazard summary):
+#   Phosphorus pentoxide, Potassium tert-butoxide, Ethylmagnesium bromide, Trimethyloxonium
+#   tetrafluoroborate, Lugol's iodine, Fura-2-acetoxymethyl ester, Fura-2, Tebbe's reagent,
+#   Bromine trifluoride, Benzyltriethylammonium hydroxide, Iodobenzene dichloride, Frémy's salt,
+#   Tribromoisocyanuric acid, Vanadium pentafluoride, Methyl phenyldiazoacetate,
+#   Bis(trimethylsilyl)peroxide, Potassium azodicarboxylate, Trichloromethanesulfonic acid,
+#   Chlorine monofluoride, Lithium diphenylphosphide, Lithium naphthalenide
